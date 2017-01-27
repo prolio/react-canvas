@@ -4,7 +4,7 @@ var FrameUtils = require('./FrameUtils');
 var DrawingUtils = require('./DrawingUtils');
 var EventTypes = require('./EventTypes');
 
-function RenderLayer() {
+function RenderLayer () {
   this.children = [];
   this.frame = FrameUtils.zero();
 }
@@ -16,7 +16,7 @@ RenderLayer.prototype = {
    *
    * @return {RenderLayer}
    */
-  getRootLayer: function getRootLayer() {
+  getRootLayer: function () {
     var root = this;
     while (root.parentLayer) {
       root = root.parentLayer;
@@ -30,7 +30,7 @@ RenderLayer.prototype = {
    *
    * @param {RenderLayer} parentLayer
    */
-  inject: function inject(parentLayer) {
+  inject: function (parentLayer) {
     if (this.parentLayer && this.parentLayer !== parentLayer) {
       this.remove();
     }
@@ -45,7 +45,7 @@ RenderLayer.prototype = {
    * @param {RenderLayer} parentLayer
    * @param {RenderLayer} referenceLayer
    */
-  injectBefore: function injectBefore(parentLayer, referenceLayer) {
+  injectBefore: function (parentLayer, referenceLayer) {
     // FIXME
     this.inject(parentLayer);
   },
@@ -55,7 +55,7 @@ RenderLayer.prototype = {
    *
    * @param {RenderLayer} child
    */
-  addChild: function addChild(child) {
+  addChild: function (child) {
     child.parentLayer = this;
     this.children.push(child);
   },
@@ -63,7 +63,7 @@ RenderLayer.prototype = {
   /**
    * Remove a layer from it's parent layer
    */
-  remove: function remove() {
+  remove: function () {
     if (this.parentLayer) {
       this.parentLayer.children.splice(this.parentLayer.children.indexOf(this), 1);
     }
@@ -78,7 +78,7 @@ RenderLayer.prototype = {
    * @param {?Object} callbackScope
    * @return {Function} invoke to unsubscribe the listener
    */
-  subscribe: function subscribe(type, callback, callbackScope) {
+  subscribe: function (type, callback, callbackScope) {
     // This is the integration point with React, called from LayerMixin.putEventListener().
     // Enforce that only a single callbcak can be assigned per event type.
     for (var eventType in EventTypes) {
@@ -96,7 +96,7 @@ RenderLayer.prototype = {
    * @param {Function} callback
    * @param {?Object} callbackScope
    */
-  addEventListener: function addEventListener(type, callback, callbackScope) {
+  addEventListener: function (type, callback, callbackScope) {
     for (var eventType in EventTypes) {
       if (EventTypes[eventType] === type) {
         delete this[eventType];
@@ -109,13 +109,14 @@ RenderLayer.prototype = {
    * @param {Function} callback
    * @param {?Object} callbackScope
    */
-  removeEventListener: function removeEventListener(type, callback, callbackScope) {
+  removeEventListener: function (type, callback, callbackScope) {
     var listeners = this.eventListeners[type];
     var listener;
     if (listeners) {
-      for (var index = 0, len = listeners.length; index < len; index++) {
+      for (var index=0, len=listeners.length; index < len; index++) {
         listener = listeners[index];
-        if (listener.callback === callback && listener.callbackScope === callbackScope) {
+        if (listener.callback === callback &&
+            listener.callbackScope === callbackScope) {
           listeners.splice(index, 1);
           break;
         }
@@ -129,7 +130,7 @@ RenderLayer.prototype = {
    * @param {Number} x
    * @param {Number} y
    */
-  translate: function translate(x, y) {
+  translate: function (x, y) {
     if (this.frame) {
       this.frame.x += x;
       this.frame.y += y;
@@ -158,7 +159,7 @@ RenderLayer.prototype = {
    * @param {?Frame} frame Optional, if not passed the entire layer's frame
    *   will be invalidated.
    */
-  invalidateLayout: function invalidateLayout() {
+  invalidateLayout: function () {
     // Bubble all the way to the root layer.
     this.getRootLayer().draw();
   },
@@ -168,7 +169,7 @@ RenderLayer.prototype = {
    * redrawn. For instance, an image component would call this once after the
    * image loads.
    */
-  invalidateBackingStore: function invalidateBackingStore() {
+  invalidateBackingStore: function () {
     if (this.backingStoreId) {
       DrawingUtils.invalidateBackingStore(this.backingStoreId);
     }
@@ -178,7 +179,7 @@ RenderLayer.prototype = {
   /**
    * Only the root owning layer should implement this function.
    */
-  draw: function draw() {
+  draw: function () {
     // Placeholer
   }
 

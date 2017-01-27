@@ -2,9 +2,9 @@
 
 var EventEmitter = require('events');
 
-var NOOP = function NOOP() {};
+var NOOP = function () {};
 
-function Img(src) {
+function Img (src) {
   this._originalSrc = src;
   this._img = new Image();
   this._img.onload = this.emit.bind(this, 'load');
@@ -26,7 +26,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
   /**
    * Pooling owner looks for this
    */
-  destructor: function destructor() {
+  destructor: function () {
     // Make sure we aren't leaking callbacks.
     this.removeAllListeners();
   },
@@ -36,7 +36,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {String}
    */
-  getOriginalSrc: function getOriginalSrc() {
+  getOriginalSrc: function () {
     return this._originalSrc;
   },
 
@@ -45,7 +45,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {HTMLImageElement}
    */
-  getRawImage: function getRawImage() {
+  getRawImage: function () {
     return this._img;
   },
 
@@ -54,7 +54,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {Number}
    */
-  getWidth: function getWidth() {
+  getWidth: function () {
     return this._img.naturalWidth;
   },
 
@@ -63,14 +63,14 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {Number}
    */
-  getHeight: function getHeight() {
+  getHeight: function () {
     return this._img.naturalHeight;
   },
 
   /**
    * @return {Bool}
    */
-  isLoaded: function isLoaded() {
+  isLoaded: function () {
     return this._img.naturalHeight > 0;
   }
 
@@ -81,10 +81,12 @@ var kInstancePoolLength = 300;
 var _instancePool = {
   length: 0,
   // Keep all the nodes in memory.
-  elements: {},
-
+  elements: {
+    
+  },
+  
   // Push with 0 frequency
-  push: function push(hash, data) {
+  push: function (hash, data) {
     this.length++;
     this.elements[hash] = {
       hash: hash, // Helps identifying 
@@ -92,45 +94,45 @@ var _instancePool = {
       data: data
     };
   },
-
-  get: function get(path) {
+  
+  get: function (path) {
     var element = this.elements[path];
-
-    if (element) {
+    
+    if( element ){
       element.freq++;
       return element.data;
     }
-
+    
     return null;
   },
-
+  
   // used to explicitely remove the path
-  removeElement: function removeElement(path) {
+  removeElement: function (path) {
     // Now almighty GC can claim this soul
     var element = this.elements[path];
     delete this.elements[path];
     this.length--;
     return element;
   },
-
-  _reduceLeastUsed: function _reduceLeastUsed(least, currentHash) {
+  
+  _reduceLeastUsed: function (least, currentHash) {
     var current = _instancePool.elements[currentHash];
-
-    if (least.freq > current.freq) {
+    
+    if( least.freq > current.freq ){
       return current;
     }
-
+    
     return least;
   },
-
-  popLeastUsed: function popLeastUsed() {
+  
+  popLeastUsed: function () {
     var reducer = _instancePool._reduceLeastUsed;
     var minUsed = Object.keys(this.elements).reduce(reducer, { freq: Infinity });
-
-    if (minUsed.hash) {
-      return this.removeElement(minUsed.hash);
+    
+    if( minUsed.hash ){
+      return this.removeElement(minUsed.hash);  
     }
-
+    
     return null;
   }
 };
@@ -142,7 +144,7 @@ var ImageCache = {
    *
    * @return {Img}
    */
-  get: function get(src) {
+  get: function (src) {
     var image = _instancePool.get(src);
     if (!image) {
       // Awesome LRU

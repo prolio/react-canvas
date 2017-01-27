@@ -7,7 +7,12 @@ var RenderLayer = require('./RenderLayer');
 
 var Group = createComponent('Group', LayerMixin, ContainerMixin, {
 
-  mountComponent: function mountComponent(transaction, nativeParent, nativeContainerInfo, context) {
+  mountComponent: function (
+    transaction,
+    nativeParent,
+    nativeContainerInfo,
+    context
+  ) {
     var props = this._currentElement.props;
     var layer = this.node;
 
@@ -17,7 +22,7 @@ var Group = createComponent('Group', LayerMixin, ContainerMixin, {
     return layer;
   },
 
-  receiveComponent: function receiveComponent(nextComponent, transaction, context) {
+  receiveComponent: function (nextComponent, transaction, context) {
     var props = nextComponent.props;
     var prevProps = this._currentElement.props;
     this.applyLayerProps(prevProps, props);
@@ -26,7 +31,7 @@ var Group = createComponent('Group', LayerMixin, ContainerMixin, {
     this.node.invalidateLayout();
   },
 
-  unmountComponent: function unmountComponent() {
+  unmountComponent: function () {
     LayerMixin.unmountComponent.call(this);
     this.unmountChildren();
   }

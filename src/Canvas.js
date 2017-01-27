@@ -3,7 +3,7 @@
 // Note that this class intentionally does not use PooledClass.
 // DrawingUtils manages <canvas> pooling for more fine-grained control.
 
-function Canvas(width, height, scale) {
+function Canvas (width, height, scale) {
   // Re-purposing an existing canvas element.
   if (!this._canvas) {
     this._canvas = document.createElement('canvas');
@@ -20,11 +20,11 @@ function Canvas(width, height, scale) {
 
 Object.assign(Canvas.prototype, {
 
-  getRawCanvas: function getRawCanvas() {
+  getRawCanvas: function () {
     return this._canvas;
   },
 
-  getContext: function getContext() {
+  getContext: function () {
     return this._canvas.getContext('2d');
   }
 

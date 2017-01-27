@@ -17,8 +17,8 @@ var _backingStores = [];
  * @param {String} id The unique `backingStoreId` for a RenderLayer
  * @return {HTMLCanvasElement}
  */
-function getBackingStore(id) {
-  for (var i = 0, len = _backingStores.length; i < len; i++) {
+function getBackingStore (id) {
+  for (var i=0, len=_backingStores.length; i < len; i++) {
     if (_backingStores[i].id === id) {
       return _backingStores[i].canvas;
     }
@@ -31,8 +31,8 @@ function getBackingStore(id) {
  *
  * @param {String} id The layer's backingStoreId
  */
-function invalidateBackingStore(id) {
-  for (var i = 0, len = _backingStores.length; i < len; i++) {
+function invalidateBackingStore (id) {
+  for (var i=0, len=_backingStores.length; i < len; i++) {
     if (_backingStores[i].id === id) {
       _backingStores.splice(i, 1);
       break;
@@ -43,7 +43,7 @@ function invalidateBackingStore(id) {
 /**
  * Purge the entire backing store cache.
  */
-function invalidateAllBackingStores() {
+function invalidateAllBackingStores () {
   _backingStores = [];
 }
 
@@ -52,7 +52,7 @@ function invalidateAllBackingStores() {
  *
  * @param {RenderLayer} layer
  */
-function getBackingStoreAncestor(layer) {
+function getBackingStoreAncestor (layer) {
   while (layer) {
     if (layer.backingStoreId) {
       return layer;
@@ -69,7 +69,7 @@ function getBackingStoreAncestor(layer) {
  * @param {String} imageUrl
  * @return {Boolean}
  */
-function layerContainsImage(layer, imageUrl) {
+function layerContainsImage (layer, imageUrl) {
   // Check the layer itself.
   if (layer.type === 'image' && layer.imageUrl === imageUrl) {
     return layer;
@@ -77,7 +77,7 @@ function layerContainsImage(layer, imageUrl) {
 
   // Check the layer's children.
   if (layer.children) {
-    for (var i = 0, len = layer.children.length; i < len; i++) {
+    for (var i=0, len=layer.children.length; i < len; i++) {
       if (layerContainsImage(layer.children[i], imageUrl)) {
         return layer.children[i];
       }
@@ -94,7 +94,7 @@ function layerContainsImage(layer, imageUrl) {
  * @param {FontFace} fontFace
  * @return {Boolean}
  */
-function layerContainsFontFace(layer, fontFace) {
+function layerContainsFontFace (layer, fontFace) {
   // Check the layer itself.
   if (layer.type === 'text' && layer.fontFace && layer.fontFace.id === fontFace.id) {
     return layer;
@@ -102,7 +102,7 @@ function layerContainsFontFace(layer, fontFace) {
 
   // Check the layer's children.
   if (layer.children) {
-    for (var i = 0, len = layer.children.length; i < len; i++) {
+    for (var i=0, len=layer.children.length; i < len; i++) {
       if (layerContainsFontFace(layer.children[i], fontFace)) {
         return layer.children[i];
       }
@@ -118,7 +118,7 @@ function layerContainsFontFace(layer, fontFace) {
  *
  * @param {String} imageUrl
  */
-function handleImageLoad(imageUrl) {
+function handleImageLoad (imageUrl) {
   _backingStores.forEach(function (backingStore) {
     if (layerContainsImage(backingStore.layer, imageUrl)) {
       invalidateBackingStore(backingStore.id);
@@ -132,7 +132,7 @@ function handleImageLoad(imageUrl) {
  *
  * @param {FontFace} fontFace
  */
-function handleFontLoad(fontFace) {
+function handleFontLoad (fontFace) {
   _backingStores.forEach(function (backingStore) {
     if (layerContainsFontFace(backingStore.layer, fontFace)) {
       invalidateBackingStore(backingStore.id);
@@ -146,7 +146,7 @@ function handleFontLoad(fontFace) {
  * @param {CanvasRenderingContext2d} ctx
  * @param {RenderLayer} layer
  */
-function drawRenderLayer(ctx, layer) {
+function drawRenderLayer (ctx, layer) {
   var customDrawFunc;
 
   // Performance: avoid drawing hidden layers.
@@ -171,7 +171,8 @@ function drawRenderLayer(ctx, layer) {
   // Establish drawing context for certain properties:
   // - alpha
   // - translate
-  var saveContext = layer.alpha !== null && layer.alpha < 1 || layer.translateX || layer.translateY;
+  var saveContext = (layer.alpha !== null && layer.alpha < 1) ||
+                    (layer.translateX || layer.translateY);
 
   if (saveContext) {
     ctx.save();
@@ -221,7 +222,7 @@ function drawRenderLayer(ctx, layer) {
  * @param {CanvasRenderingContext2d} ctx
  * @param {RenderLayer} layer
  */
-function drawBaseRenderLayer(ctx, layer) {
+function drawBaseRenderLayer (ctx, layer) {
   var frame = layer.frame;
 
   // Border radius:
@@ -282,7 +283,7 @@ function drawBaseRenderLayer(ctx, layer) {
  * @param {Function} customDrawFunc
  * @private
  */
-function drawCacheableRenderLayer(ctx, layer, customDrawFunc) {
+function drawCacheableRenderLayer (ctx, layer, customDrawFunc) {
   // See if there is a pre-drawn canvas in the pool.
   var backingStore = getBackingStore(layer.backingStoreId);
   var backingStoreScale = layer.scale || window.devicePixelRatio;
@@ -359,14 +360,14 @@ function drawCacheableRenderLayer(ctx, layer, customDrawFunc) {
 /**
  * @private
  */
-function sortByZIndexAscending(layerA, layerB) {
+function sortByZIndexAscending (layerA, layerB) {
   return (layerA.zIndex || 0) - (layerB.zIndex || 0);
 }
 
 /**
  * @private
  */
-function drawImageRenderLayer(ctx, layer) {
+function drawImageRenderLayer (ctx, layer) {
   if (!layer.imageUrl) {
     return;
   }
@@ -383,7 +384,7 @@ function drawImageRenderLayer(ctx, layer) {
 /**
  * @private
  */
-function drawTextRenderLayer(ctx, layer) {
+function drawTextRenderLayer (ctx, layer) {
   // Fallback to standard font.
   var fontFace = layer.fontFace || FontFace.Default();
 
@@ -403,7 +404,7 @@ function drawTextRenderLayer(ctx, layer) {
 /**
  * @private
  */
-function drawGradientRenderLayer(ctx, layer) {
+function drawGradientRenderLayer (ctx, layer) {
   // Default to linear gradient from top to bottom.
   var x1 = layer.x1 || layer.frame.x;
   var y1 = layer.y1 || layer.frame.y;

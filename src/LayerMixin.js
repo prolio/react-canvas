@@ -11,16 +11,16 @@ var LAYER_GUID = 0;
 
 var LayerMixin = {
 
-  construct: function construct(element) {
+  construct: function(element) {
     this._currentElement = element;
     this._layerId = LAYER_GUID++;
   },
 
-  getPublicInstance: function getPublicInstance() {
+  getPublicInstance: function() {
     return this.node;
   },
 
-  putEventListener: function putEventListener(type, listener) {
+  putEventListener: function(type, listener) {
     var subscriptions = this.subscriptions || (this.subscriptions = {});
     var listeners = this.listeners || (this.listeners = {});
     listeners[type] = listener;
@@ -36,17 +36,17 @@ var LayerMixin = {
     }
   },
 
-  handleEvent: function handleEvent(event) {
+  handleEvent: function(event) {
     // TODO
   },
 
-  destroyEventListeners: function destroyEventListeners() {
+  destroyEventListeners: function() {
     // TODO
   },
 
-  applyLayerProps: function applyLayerProps(prevProps, props) {
+  applyLayerProps: function (prevProps, props) {
     var layer = this.node;
-    var style = props && props.style ? props.style : {};
+    var style = (props && props.style) ? props.style : {};
     layer._originalStyle = style;
 
     // Common layer properties
@@ -79,19 +79,18 @@ var LayerMixin = {
     }
   },
 
-  mountComponentIntoNode: function mountComponentIntoNode(rootID, container) {
-    throw new Error('You cannot render a Canvas component standalone. ' + 'You need to wrap it in a Surface.');
+  mountComponentIntoNode: function(rootID, container) {
+    throw new Error(
+      'You cannot render a Canvas component standalone. ' +
+      'You need to wrap it in a Surface.'
+    );
   },
 
-  unmountComponent: function unmountComponent() {
+  unmountComponent: function() {
     this.destroyEventListeners();
   },
-  getHostNode: function getHostNode() {
-    return this.node;
-  },
-  getNativeNode: function getNativeNode() {
-    return this.node;
-  }
+  getHostNode: function () { return this.node },
+  getNativeNode: function () { return this.node },
 
 };
 

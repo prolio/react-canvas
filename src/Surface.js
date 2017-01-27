@@ -7,7 +7,7 @@ var ContainerMixin = require('./ContainerMixin');
 var RenderLayer = require('./RenderLayer');
 var FrameUtils = require('./FrameUtils');
 var DrawingUtils = require('./DrawingUtils');
-var _hitTest = require('./hitTest');
+var hitTest = require('./hitTest');
 var layoutNode = require('./layoutNode');
 
 /**
@@ -16,8 +16,6 @@ var layoutNode = require('./layoutNode');
  */
 
 var Surface = React.createClass({
-  displayName: 'Surface',
-
 
   mixins: [ContainerMixin],
 
@@ -32,13 +30,13 @@ var Surface = React.createClass({
     enableCSSLayout: React.PropTypes.bool
   },
 
-  getDefaultProps: function getDefaultProps() {
+  getDefaultProps: function () {
     return {
       scale: window.devicePixelRatio || 1
     };
   },
 
-  componentDidMount: function componentDidMount() {
+  componentDidMount: function () {
     // Prepare the <canvas> for drawing.
     this.scale();
 
@@ -51,23 +49,33 @@ var Surface = React.createClass({
 
     // This is the integration point between custom canvas components and React
     var transaction = ReactUpdates.ReactReconcileTransaction.getPooled();
-    transaction.perform(this.mountAndInjectChildrenAtRoot, this, this.props.children, transaction);
+    transaction.perform(
+      this.mountAndInjectChildrenAtRoot,
+      this,
+      this.props.children,
+      transaction
+    );
     ReactUpdates.ReactReconcileTransaction.release(transaction);
 
     // Execute initial draw on mount.
     this.node.draw();
   },
 
-  componentWillUnmount: function componentWillUnmount() {
+  componentWillUnmount: function () {
     // Implemented in ReactMultiChild.Mixin
     this.unmountChildren();
   },
 
-  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate: function (prevProps, prevState) {
     // We have to manually apply child reconciliation since child are not
     // declared in render().
     var transaction = ReactUpdates.ReactReconcileTransaction.getPooled();
-    transaction.perform(this.updateChildrenAtRoot, this, this.props.children, transaction);
+    transaction.perform(
+      this.updateChildrenAtRoot,
+      this,
+      this.props.children,
+      transaction
+    );
     ReactUpdates.ReactReconcileTransaction.release(transaction);
 
     // Re-scale the <canvas> when changing size.
@@ -81,7 +89,7 @@ var Surface = React.createClass({
     }
   },
 
-  render: function render() {
+  render: function () {
     // Scale the drawing area to match DPI.
     var width = this.props.width * this.props.scale;
     var height = this.props.height * this.props.scale;
@@ -90,35 +98,40 @@ var Surface = React.createClass({
       height: this.props.height
     };
 
-    return React.createElement('canvas', {
-      ref: 'canvas',
-      className: this.props.className,
-      id: this.props.id,
-      width: width,
-      height: height,
-      style: style,
-      onTouchStart: this.handleTouchStart,
-      onTouchMove: this.handleTouchMove,
-      onTouchEnd: this.handleTouchEnd,
-      onTouchCancel: this.handleTouchEnd,
-      onClick: this.handleClick,
-      onContextMenu: this.handleContextMenu,
-      onDoubleClick: this.handleDoubleClick });
+    return (
+      React.createElement('canvas', {
+        ref: 'canvas',
+        className: this.props.className,
+        id: this.props.id,
+        width: width,
+        height: height,
+        style: style,
+        onTouchStart: this.handleTouchStart,
+        onTouchMove: this.handleTouchMove,
+        onTouchEnd: this.handleTouchEnd,
+        onTouchCancel: this.handleTouchEnd,
+        onClick: this.handleClick,
+        onContextMenu: this.handleContextMenu,
+        onDoubleClick: this.handleDoubleClick})
+    );
   },
 
   // Drawing
   // =======
 
-  getContext: function getContext() {
-    'production' !== process.env.NODE_ENV ? invariant(this.isMounted(), 'Tried to access drawing context on an unmounted Surface.') : invariant(this.isMounted());
+  getContext: function () {
+    ('production' !== process.env.NODE_ENV ? invariant(
+      this.isMounted(),
+      'Tried to access drawing context on an unmounted Surface.'
+    ) : invariant(this.isMounted()));
     return this.refs.canvas.getContext('2d');
   },
 
-  scale: function scale() {
+  scale: function () {
     this.getContext().scale(this.props.scale, this.props.scale);
   },
 
-  batchedTick: function batchedTick() {
+  batchedTick: function () {
     if (this._frameReady === false) {
       this._pendingTick = true;
       return;
@@ -126,7 +139,7 @@ var Surface = React.createClass({
     this.tick();
   },
 
-  tick: function tick() {
+  tick: function () {
     // Block updates until next animation frame.
     this._frameReady = false;
     this.clear();
@@ -134,7 +147,7 @@ var Surface = React.createClass({
     requestAnimationFrame(this.afterTick);
   },
 
-  afterTick: function afterTick() {
+  afterTick: function () {
     // Execute pending draw that may have been scheduled during previous frame
     this._frameReady = true;
     if (this._pendingTick) {
@@ -143,11 +156,11 @@ var Surface = React.createClass({
     }
   },
 
-  clear: function clear() {
+  clear: function () {
     this.getContext().clearRect(0, 0, this.props.width, this.props.height);
   },
 
-  draw: function draw() {
+  draw: function () {
     var layout;
     if (this.node) {
       if (this.props.enableCSSLayout) {
@@ -160,32 +173,32 @@ var Surface = React.createClass({
   // Events
   // ======
 
-  hitTest: function hitTest(e) {
-    var hitTarget = _hitTest(e, this.node, this.refs.canvas);
+  hitTest: function (e) {
+    var hitTarget = hitTest(e, this.node, this.refs.canvas);
     if (hitTarget) {
-      hitTarget[_hitTest.getHitHandle(e.type)](e);
+      hitTarget[hitTest.getHitHandle(e.type)](e);
     }
   },
 
-  handleTouchStart: function handleTouchStart(e) {
-    var hitTarget = _hitTest(e, this.node, this.refs.canvas);
+  handleTouchStart: function (e) {
+    var hitTarget = hitTest(e, this.node, this.refs.canvas);
     var touch;
     if (hitTarget) {
       // On touchstart: capture the current hit target for the given touch.
       this._touches = this._touches || {};
-      for (var i = 0, len = e.touches.length; i < len; i++) {
+      for (var i=0, len=e.touches.length; i < len; i++) {
         touch = e.touches[i];
         this._touches[touch.identifier] = hitTarget;
       }
-      hitTarget[_hitTest.getHitHandle(e.type)](e);
+      hitTarget[hitTest.getHitHandle(e.type)](e);
     }
   },
 
-  handleTouchMove: function handleTouchMove(e) {
+  handleTouchMove: function (e) {
     this.hitTest(e);
   },
 
-  handleTouchEnd: function handleTouchEnd(e) {
+  handleTouchEnd: function (e) {
     // touchend events do not generate a pageX/pageY so we rely
     // on the currently captured touch targets.
     if (!this._touches) {
@@ -193,8 +206,8 @@ var Surface = React.createClass({
     }
 
     var hitTarget;
-    var hitHandle = _hitTest.getHitHandle(e.type);
-    for (var i = 0, len = e.changedTouches.length; i < len; i++) {
+    var hitHandle = hitTest.getHitHandle(e.type);
+    for (var i=0, len=e.changedTouches.length; i < len; i++) {
       hitTarget = this._touches[e.changedTouches[i].identifier];
       if (hitTarget && hitTarget[hitHandle]) {
         hitTarget[hitHandle](e);
@@ -203,17 +216,17 @@ var Surface = React.createClass({
     }
   },
 
-  handleClick: function handleClick(e) {
+  handleClick: function (e) {
     this.hitTest(e);
   },
 
-  handleContextMenu: function handleContextMenu(e) {
+  handleContextMenu: function (e) {
     this.hitTest(e);
   },
 
-  handleDoubleClick: function handleDoubleClick(e) {
+  handleDoubleClick: function (e) {
     this.hitTest(e);
-  }
+  },
 
 });
 

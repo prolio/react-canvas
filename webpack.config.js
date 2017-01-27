@@ -1,32 +1,30 @@
+const path = require('path')
+const webpack = require('webpack')
+
+const env = process.env.NODE_ENV
+
 module.exports = {
-  cache: true,
-
-  watch: true,
-
-  entry: {
-    'listview': ['./examples/listview/app.js'],
-    'timeline': ['./examples/timeline/app.js'],
-    'gradient': ['./examples/gradient/app.js'],
-    'css-layout': ['./examples/css-layout/app.js']
+  module: {
+    loaders: [{
+      test: /\.js$/,
+      loader: 'babel-loader',
+      exclude: /node_modules/,
+    }],
+    postLoaders: [{
+      loader: 'transform?brfs',
+    }],
   },
 
   output: {
-    filename: '[name].js'
+    filename: 'index.js',
+    path: path.resolve(__dirname, './lib'),
   },
 
-  module: {
-    loaders: [
-      { test: /\.js$/, loader: 'babel-loader!transform/cacheable?envify' },
-    ],
-    postLoaders: [
-      { loader: "transform?brfs" }
-    ]
-  },
-  devtool: ['source-map'],
-  resolve: {
-    root: __dirname,
-    alias: {
-      'react-canvas': 'lib/ReactCanvas.js'
-    }
-  }
-};
+  plugins: [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(env)
+    })
+  ]
+}

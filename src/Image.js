@@ -13,14 +13,19 @@ var FADE_DURATION = 200;
 
 var RawImage = createComponent('Image', LayerMixin, {
 
-  applyImageProps: function applyImageProps(prevProps, props) {
+  applyImageProps: function (prevProps, props) {
     var layer = this.node;
 
     layer.type = 'image';
     layer.imageUrl = props.src;
   },
 
-  mountComponent: function mountComponent(transaction, nativeParent, nativeContainerInfo, context) {
+  mountComponent: function (
+    transaction,
+    nativeParent,
+    nativeContainerInfo,
+    context
+  ) {
     var props = this._currentElement.props;
     var layer = this.node;
     this.applyLayerProps({}, props);
@@ -28,20 +33,18 @@ var RawImage = createComponent('Image', LayerMixin, {
     return layer;
   },
 
-  receiveComponent: function receiveComponent(nextComponent, transaction, context) {
+  receiveComponent: function (nextComponent, transaction, context) {
     var prevProps = this._currentElement.props;
     var props = nextComponent.props;
     this.applyLayerProps(prevProps, props);
     this.applyImageProps(prevProps, props);
     this._currentElement = nextComponent;
     this.node.invalidateLayout();
-  }
+  },
 
 });
 
 var Image = React.createClass({
-  displayName: 'Image',
-
 
   propTypes: {
     src: React.PropTypes.string.isRequired,
@@ -51,7 +54,7 @@ var Image = React.createClass({
     fadeInDuration: React.PropTypes.number
   },
 
-  getInitialState: function getInitialState() {
+  getInitialState: function () {
     var loaded = ImageCache.get(this.props.src).isLoaded();
     return {
       loaded: loaded,
@@ -59,33 +62,33 @@ var Image = React.createClass({
     };
   },
 
-  componentDidMount: function componentDidMount() {
+  componentDidMount: function () {
     ImageCache.get(this.props.src).on('load', this.handleImageLoad);
   },
 
-  componentWillUpdate: function componentWillUpdate(nextProps, nextState) {
-    if (nextProps.src !== this.props.src) {
+  componentWillUpdate: function(nextProps, nextState) {
+    if(nextProps.src !== this.props.src) {
       ImageCache.get(this.props.src).removeListener('load', this.handleImageLoad);
       ImageCache.get(nextProps.src).on('load', this.handleImageLoad);
       var loaded = ImageCache.get(nextProps.src).isLoaded();
-      this.setState({ loaded: loaded });
+      this.setState({loaded: loaded});
     }
   },
 
-  componentWillUnmount: function componentWillUnmount() {
+  componentWillUnmount: function () {
     if (this._pendingAnimationFrame) {
       cancelAnimationFrame(this._pendingAnimationFrame);
     }
     ImageCache.get(this.props.src).removeListener('load', this.handleImageLoad);
   },
 
-  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate: function (prevProps, prevState) {
     if (this.refs.image) {
       this.refs.image.invalidateLayout();
     }
   },
 
-  render: function render() {
+  render: function () {
     var rawImage;
     var imageStyle = Object.assign({}, this.props.style);
     var style = Object.assign({}, this.props.style);
@@ -100,10 +103,15 @@ var Image = React.createClass({
     style.backgroundColor = imageStyle.backgroundColor = null;
     backgroundStyle.alpha = clamp(1 - this.state.imageAlpha, 0, 1);
 
-    return React.createElement(Group, { ref: 'main', style: style }, React.createElement(Layer, { ref: 'background', style: backgroundStyle }), React.createElement(RawImage, { ref: 'image', src: this.props.src, style: imageStyle, useBackingStore: useBackingStore }));
+    return (
+      React.createElement(Group, {ref: 'main', style: style},
+        React.createElement(Layer, {ref: 'background', style: backgroundStyle}),
+        React.createElement(RawImage, {ref: 'image', src: this.props.src, style: imageStyle, useBackingStore: useBackingStore})
+      )
+    );
   },
 
-  handleImageLoad: function handleImageLoad() {
+  handleImageLoad: function () {
     var imageAlpha = 1;
     if (this.props.fadeIn) {
       imageAlpha = 0;
@@ -113,7 +121,7 @@ var Image = React.createClass({
     this.setState({ loaded: true, imageAlpha: imageAlpha });
   },
 
-  stepThroughAnimation: function stepThroughAnimation() {
+  stepThroughAnimation: function () {
     var fadeInDuration = this.props.fadeInDuration || FADE_DURATION;
     var alpha = Easing.easeInCubic((Date.now() - this._animationStartTime) / fadeInDuration);
     alpha = clamp(alpha, 0, 1);

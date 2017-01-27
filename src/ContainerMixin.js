@@ -16,7 +16,7 @@ var ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
    * @param {number} toIndex Destination index of the element.
    * @protected
    */
-  moveChild: function moveChild(child, afterNode, toIndex, lastIndex) {
+  moveChild: function(child, afterNode, toIndex, lastIndex) {
     var childNode = child._mountImage;
     var mostRecentlyPlacedChild = this._mostRecentlyPlacedChild;
     if (mostRecentlyPlacedChild == null) {
@@ -48,7 +48,7 @@ var ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
    * @param {object} childNode ART node to insert.
    * @protected
    */
-  createChild: function createChild(child, afterNode, childNode) {
+  createChild: function(child, afterNode, childNode) {
     child._mountImage = childNode;
     var mostRecentlyPlacedChild = this._mostRecentlyPlacedChild;
     if (mostRecentlyPlacedChild == null) {
@@ -75,17 +75,17 @@ var ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
    * @param {ReactComponent} child Child to remove.
    * @protected
    */
-  removeChild: function removeChild(child) {
+  removeChild: function(child) {
     child._mountImage.remove();
     child._mountImage = null;
     this.node.invalidateLayout();
   },
 
-  updateChildrenAtRoot: function updateChildrenAtRoot(nextChildren, transaction) {
+  updateChildrenAtRoot: function(nextChildren, transaction) {
     this.updateChildren(nextChildren, transaction, emptyObject);
   },
 
-  mountAndInjectChildrenAtRoot: function mountAndInjectChildrenAtRoot(children, transaction) {
+  mountAndInjectChildrenAtRoot: function(children, transaction) {
     this.mountAndInjectChildren(children, transaction, emptyObject);
   },
 
@@ -97,15 +97,19 @@ var ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
    * @internal
    * @override {ReactMultiChild.Mixin.updateChildren}
    */
-  updateChildren: function updateChildren(nextChildren, transaction, context) {
+  updateChildren: function(nextChildren, transaction, context) {
     this._mostRecentlyPlacedChild = null;
     this._updateChildren(nextChildren, transaction, context);
   },
 
   // Shorthands
 
-  mountAndInjectChildren: function mountAndInjectChildren(children, transaction, context) {
-    var mountedImages = this.mountChildren(children, transaction, context);
+  mountAndInjectChildren: function(children, transaction, context) {
+    var mountedImages = this.mountChildren(
+      children,
+      transaction,
+      context
+    );
 
     // Each mount image corresponds to one of the flattened children
     var i = 0;
@@ -118,12 +122,8 @@ var ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
       }
     }
   },
-  getHostNode: function getHostNode() {
-    return this.node;
-  },
-  getNativeNode: function getNativeNode() {
-    return this.node;
-  }
+  getHostNode: function () { return this.node },
+  getNativeNode: function () { return this.node },
 
 });
 

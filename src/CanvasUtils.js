@@ -19,7 +19,7 @@ var clamp = require('./clamp');
  *   {Object} focusPoint {x,y}
  *   {String} backgroundColor
  */
-function drawImage(ctx, image, x, y, width, height, options) {
+function drawImage (ctx, image, x, y, width, height, options) {
   options = options || {};
 
   if (options.backgroundColor) {
@@ -47,7 +47,10 @@ function drawImage(ctx, image, x, y, width, height, options) {
     height: image.getHeight()
   };
 
-  scale = Math.max(width / actualSize.width, height / actualSize.height) || 1;
+  scale = Math.max(
+    width / actualSize.width,
+    height / actualSize.height
+  ) || 1;
   scale = parseFloat(scale.toFixed(4), 10);
 
   scaledSize = {
@@ -59,8 +62,8 @@ function drawImage(ctx, image, x, y, width, height, options) {
     // Since image hints are relative to image "original" dimensions (original != actual),
     // use the original size for focal point cropping.
     if (options.originalHeight) {
-      focusPoint.x *= actualSize.height / options.originalHeight;
-      focusPoint.y *= actualSize.height / options.originalHeight;
+      focusPoint.x *= (actualSize.height / options.originalHeight);
+      focusPoint.y *= (actualSize.height / options.originalHeight);
     }
   } else {
     // Default focal point to [0.5, 0.5]
@@ -73,8 +76,8 @@ function drawImage(ctx, image, x, y, width, height, options) {
   // Clip the image to rectangle (sx, sy, sw, sh).
   sx = Math.round(clamp(width * 0.5 - focusPoint.x * scale, width - scaledSize.width, 0)) * (-1 / scale);
   sy = Math.round(clamp(height * 0.5 - focusPoint.y * scale, height - scaledSize.height, 0)) * (-1 / scale);
-  sw = Math.round(actualSize.width - sx * 2);
-  sh = Math.round(actualSize.height - sy * 2);
+  sw = Math.round(actualSize.width - (sx * 2));
+  sh = Math.round(actualSize.height - (sy * 2));
 
   // Scale the image to dimensions (dw, dh).
   dw = Math.round(width);
@@ -118,5 +121,6 @@ function drawGradient(ctx, x1, y1, x2, y2, colorStops, x, y, width, height) {
 
 module.exports = {
   drawImage: drawImage,
-  drawGradient: drawGradient
+  drawGradient: drawGradient,
 };
+

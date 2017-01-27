@@ -9,28 +9,28 @@ var computeLayout = require('./Layout');
  * @param {Renderlayer} root
  * @return {Object}
  */
-function layoutNode(root) {
+function layoutNode (root) {
   var rootNode = createNode(root);
   computeLayout(rootNode);
   walkNode(rootNode);
   return rootNode;
 }
 
-function createNode(layer) {
+function createNode (layer) {
   return {
     layer: layer,
     layout: {
       width: undefined, // computeLayout will mutate
       height: undefined, // computeLayout will mutate
       top: 0,
-      left: 0
+      left: 0,
     },
     style: layer._originalStyle || {},
     children: (layer.children || []).map(createNode)
   };
 }
 
-function walkNode(node, parentLeft, parentTop) {
+function walkNode (node, parentLeft, parentTop) {
   node.layer.frame.x = node.layout.left + (parentLeft || 0);
   node.layer.frame.y = node.layout.top + (parentTop || 0);
   node.layer.frame.width = node.layout.width;

@@ -11,7 +11,7 @@ var EventTypes = require('./EventTypes');
  * @param {?HTMLElement} rootNode
  * @return {RenderLayer}
  */
-function hitTest(e, rootLayer, rootNode) {
+function hitTest (e, rootLayer, rootNode) {
   var touch = e.touches ? e.touches[0] : e;
   var touchX = touch.pageX;
   var touchY = touch.pageY;
@@ -24,20 +24,26 @@ function hitTest(e, rootLayer, rootNode) {
 
   touchY = touchY - window.pageYOffset;
   touchX = touchX - window.pageXOffset;
-  return getLayerAtPoint(rootLayer, e.type, FrameUtils.make(touchX, touchY, 1, 1), rootLayer.translateX || 0, rootLayer.translateY || 0);
+  return getLayerAtPoint(
+    rootLayer,
+    e.type,
+    FrameUtils.make(touchX, touchY, 1, 1),
+    rootLayer.translateX || 0,
+    rootLayer.translateY || 0
+  );
 }
 
 /**
  * @private
  */
-function sortByZIndexDescending(layer, otherLayer) {
+function sortByZIndexDescending (layer, otherLayer) {
   return (otherLayer.zIndex || 0) - (layer.zIndex || 0);
 }
 
 /**
  * @private
  */
-function getHitHandle(type) {
+function getHitHandle (type) {
   var hitHandle;
   for (var tryHandle in EventTypes) {
     if (EventTypes[tryHandle] === type) {
@@ -51,7 +57,7 @@ function getHitHandle(type) {
 /**
  * @private
  */
-function getLayerAtPoint(root, type, point, tx, ty) {
+function getLayerAtPoint (root, type, point, tx, ty) {
   var layer = null;
   var hitHandle = getHitHandle(type);
   var sortedChildren;
@@ -65,8 +71,14 @@ function getLayerAtPoint(root, type, point, tx, ty) {
   // Child-first search
   if (root.children) {
     sortedChildren = root.children.slice().reverse().sort(sortByZIndexDescending);
-    for (var i = 0, len = sortedChildren.length; i < len; i++) {
-      layer = getLayerAtPoint(sortedChildren[i], type, point, tx + (root.translateX || 0), ty + (root.translateY || 0));
+    for (var i=0, len=sortedChildren.length; i < len; i++) {
+      layer = getLayerAtPoint(
+        sortedChildren[i],
+        type,
+        point,
+        tx + (root.translateX || 0),
+        ty + (root.translateY || 0)
+      );
       if (layer) {
         break;
       }
@@ -75,7 +87,10 @@ function getLayerAtPoint(root, type, point, tx, ty) {
 
   // Check for hit outsets
   if (root.hitOutsets) {
-    hitFrame = FrameUtils.inset(FrameUtils.clone(hitFrame), -root.hitOutsets[0], -root.hitOutsets[1], -root.hitOutsets[2], -root.hitOutsets[3]);
+    hitFrame = FrameUtils.inset(FrameUtils.clone(hitFrame),
+      -root.hitOutsets[0], -root.hitOutsets[1],
+      -root.hitOutsets[2], -root.hitOutsets[3]
+    );
   }
 
   // Check for x/y translation
@@ -97,3 +112,4 @@ function getLayerAtPoint(root, type, point, tx, ty) {
 
 module.exports = hitTest;
 module.exports.getHitHandle = getHitHandle;
+

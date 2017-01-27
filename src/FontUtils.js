@@ -2,7 +2,7 @@
 
 var FontFace = require('./FontFace');
 
-var _useNativeImpl = typeof window.FontFace !== 'undefined';
+var _useNativeImpl = (typeof window.FontFace !== 'undefined');
 var _pendingFonts = {};
 var _loadedFonts = {};
 var _failedFonts = {};
@@ -14,7 +14,7 @@ var kFontLoadTimeout = 3000;
  * @param {FontFace} fontFace
  * @return {Boolean}
  */
-function isFontLoaded(fontFace) {
+function isFontLoaded (fontFace) {
   // For remote URLs, check the cache. System fonts (sans url) assume loaded.
   return _loadedFonts[fontFace.id] !== undefined || !fontFace.url;
 }
@@ -24,10 +24,10 @@ function isFontLoaded(fontFace) {
  * @param {FontFace} fontFace The font to Load
  * @param {Function} callback Function executed upon font Load
  */
-function loadFont(fontFace, callback) {
+function loadFont (fontFace, callback) {
   var defaultNode;
   var testNode;
-  var _checkFont;
+  var checkFont;
 
   // See if we've previously loaded it.
   if (_loadedFonts[fontFace.id]) {
@@ -64,7 +64,7 @@ function loadFont(fontFace, callback) {
   };
 
   // Font watcher
-  _checkFont = function checkFont() {
+  checkFont = function () {
     var currWidth = testNode.getBoundingClientRect().width;
     var defaultWidth = defaultNode.getBoundingClientRect().width;
     var loaded = currWidth !== defaultWidth;
@@ -76,13 +76,13 @@ function loadFont(fontFace, callback) {
       if (Date.now() - _pendingFonts[fontFace.id].startTime >= kFontLoadTimeout) {
         handleFontLoad(fontFace, true);
       } else {
-        requestAnimationFrame(_checkFont);
+        requestAnimationFrame(checkFont);
       }
     }
   };
 
   // Start watching
-  _checkFont();
+  checkFont();
 }
 
 // Internal
@@ -92,7 +92,7 @@ function loadFont(fontFace, callback) {
  * Native FontFace loader implementation
  * @internal
  */
-function loadFontNative(fontFace, callback) {
+function loadFontNative (fontFace, callback) {
   var theFontFace;
 
   // See if we've previously loaded it.
@@ -122,7 +122,8 @@ function loadFontNative(fontFace, callback) {
   };
 
   // Use font loader API
-  theFontFace = new window.FontFace(fontFace.family, 'url(' + fontFace.url + ')', fontFace.attributes);
+  theFontFace = new window.FontFace(fontFace.family,
+    'url(' + fontFace.url + ')', fontFace.attributes);
 
   theFontFace.load().then(function () {
     _loadedFonts[fontFace.id] = true;
@@ -139,10 +140,12 @@ function loadFontNative(fontFace, callback) {
  * in highly varied measured widths when compared to the default font.
  * @internal
  */
-function createTestNode(family, attributes) {
+function createTestNode (family, attributes) {
   var span = document.createElement('span');
   span.setAttribute('data-fontfamily', family);
-  span.style.cssText = 'position:absolute; left:-5000px; top:-5000px; visibility:hidden;' + 'font-size:100px; font-family:"' + family + '", Helvetica;font-weight: ' + attributes.weight + ';' + 'font-style:' + attributes.style + ';';
+  span.style.cssText = 'position:absolute; left:-5000px; top:-5000px; visibility:hidden;' +
+    'font-size:100px; font-family:"' + family + '", Helvetica;font-weight: ' + attributes.weight + ';' +
+    'font-style:' + attributes.style + ';';
   span.innerHTML = 'BESs';
   return span;
 }
@@ -150,7 +153,7 @@ function createTestNode(family, attributes) {
 /**
  * @internal
  */
-function handleFontLoad(fontFace, timeout) {
+function handleFontLoad (fontFace, timeout) {
   var error = timeout ? 'Exceeded load timeout of ' + kFontLoadTimeout + 'ms' : null;
 
   if (!error) {

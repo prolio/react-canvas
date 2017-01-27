@@ -5,14 +5,19 @@ var LayerMixin = require('./LayerMixin');
 
 var Layer = createComponent('Layer', LayerMixin, {
 
-  mountComponent: function mountComponent(transaction, nativeParent, nativeContainerInfo, context) {
+  mountComponent: function (
+    transaction,
+    nativeParent,
+    nativeContainerInfo,
+    context
+  ) {
     var props = this._currentElement.props;
     var layer = this.node;
     this.applyLayerProps({}, props);
     return layer;
   },
 
-  receiveComponent: function receiveComponent(nextComponent, transaction, context) {
+  receiveComponent: function (nextComponent, transaction, context) {
     var prevProps = this._currentElement.props;
     var props = nextComponent.props;
     this.applyLayerProps(prevProps, props);

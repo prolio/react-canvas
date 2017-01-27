@@ -5,8 +5,8 @@
 
 var RenderLayer = require('./RenderLayer');
 
-function createComponent(name) {
-  var ReactCanvasComponent = function ReactCanvasComponent(element) {
+function createComponent (name) {
+  var ReactCanvasComponent = function (element) {
     this.node = null;
     this.subscriptions = null;
     this.listeners = null;

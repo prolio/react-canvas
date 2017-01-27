@@ -5,8 +5,8 @@ var LayerMixin = require('./LayerMixin');
 
 var Text = createComponent('Text', LayerMixin, {
 
-  applyTextProps: function applyTextProps(prevProps, props) {
-    var style = props && props.style ? props.style : {};
+  applyTextProps: function (prevProps, props) {
+    var style = (props && props.style) ? props.style : {};
     var layer = this.node;
 
     layer.type = 'text';
@@ -19,7 +19,12 @@ var Text = createComponent('Text', LayerMixin, {
     layer.textAlign = style.textAlign;
   },
 
-  mountComponent: function mountComponent(transaction, nativeParent, nativeContainerInfo, context) {
+  mountComponent: function (
+    transaction,
+    nativeParent,
+    nativeContainerInfo,
+    context
+  ) {
     var props = this._currentElement.props;
     var layer = this.node;
     this.applyLayerProps({}, props);
@@ -27,7 +32,7 @@ var Text = createComponent('Text', LayerMixin, {
     return layer;
   },
 
-  receiveComponent: function receiveComponent(nextComponent, transaction, context) {
+  receiveComponent: function (nextComponent, transaction, context) {
     var props = nextComponent.props;
     var prevProps = this._currentElement.props;
     this.applyLayerProps(prevProps, props);

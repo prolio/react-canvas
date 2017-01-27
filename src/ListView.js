@@ -6,8 +6,6 @@ var Group = require('./Group');
 var clamp = require('./clamp');
 
 var ListView = React.createClass({
-  displayName: 'ListView',
-
 
   propTypes: {
     style: React.PropTypes.object,
@@ -20,7 +18,7 @@ var ListView = React.createClass({
     onScroll: React.PropTypes.func
   },
 
-  getDefaultProps: function getDefaultProps() {
+  getDefaultProps: function () {
     return {
       style: { left: 0, top: 0, width: 0, height: 0 },
       snapping: false,
@@ -29,28 +27,32 @@ var ListView = React.createClass({
     };
   },
 
-  getInitialState: function getInitialState() {
+  getInitialState: function () {
     return {
       scrollTop: 0
     };
   },
 
-  componentDidMount: function componentDidMount() {
+  componentDidMount: function () {
     this.createScroller();
     this.updateScrollingDimensions();
   },
 
-  render: function render() {
+  render: function () {
     var items = this.getVisibleItemIndexes().map(this.renderItem);
-    return React.createElement(Group, {
-      style: this.props.style,
-      onTouchStart: this.handleTouchStart,
-      onTouchMove: this.handleTouchMove,
-      onTouchEnd: this.handleTouchEnd,
-      onTouchCancel: this.handleTouchEnd }, items);
+    return (
+      React.createElement(Group, {
+        style: this.props.style,
+        onTouchStart: this.handleTouchStart,
+        onTouchMove: this.handleTouchMove,
+        onTouchEnd: this.handleTouchEnd,
+        onTouchCancel: this.handleTouchEnd},
+        items
+      )
+    );
   },
 
-  renderItem: function renderItem(itemIndex) {
+  renderItem: function (itemIndex) {
     var item = this.props.itemGetter(itemIndex, this.state.scrollTop);
     var itemHeight = this.props.itemHeightGetter();
     var style = {
@@ -58,30 +60,34 @@ var ListView = React.createClass({
       left: 0,
       width: this.props.style.width,
       height: itemHeight,
-      translateY: itemIndex * itemHeight - this.state.scrollTop,
+      translateY: (itemIndex * itemHeight) - this.state.scrollTop,
       zIndex: itemIndex
     };
 
-    return React.createElement(Group, { style: style, key: itemIndex }, item);
+    return (
+      React.createElement(Group, {style: style, key: itemIndex},
+        item
+      )
+    );
   },
 
   // Events
   // ======
 
-  handleTouchStart: function handleTouchStart(e) {
+  handleTouchStart: function (e) {
     if (this.scroller) {
       this.scroller.doTouchStart(e.touches, e.timeStamp);
     }
   },
 
-  handleTouchMove: function handleTouchMove(e) {
+  handleTouchMove: function (e) {
     if (this.scroller) {
       e.preventDefault();
       this.scroller.doTouchMove(e.touches, e.timeStamp, e.scale);
     }
   },
 
-  handleTouchEnd: function handleTouchEnd(e) {
+  handleTouchEnd: function (e) {
     if (this.scroller) {
       this.scroller.doTouchEnd(e.timeStamp);
       if (this.props.snapping) {
@@ -90,7 +96,7 @@ var ListView = React.createClass({
     }
   },
 
-  handleScroll: function handleScroll(left, top) {
+  handleScroll: function (left, top) {
     this.setState({ scrollTop: top });
     if (this.props.onScroll) {
       this.props.onScroll(top);
@@ -100,17 +106,17 @@ var ListView = React.createClass({
   // Scrolling
   // =========
 
-  createScroller: function createScroller() {
+  createScroller: function () {
     var options = {
       scrollingX: false,
       scrollingY: true,
       decelerationRate: this.props.scrollingDeceleration,
-      penetrationAcceleration: this.props.scrollingPenetrationAcceleration
+      penetrationAcceleration: this.props.scrollingPenetrationAcceleration,
     };
     this.scroller = new Scroller(this.handleScroll, options);
   },
 
-  updateScrollingDimensions: function updateScrollingDimensions() {
+  updateScrollingDimensions: function () {
     var width = this.props.style.width;
     var height = this.props.style.height;
     var scrollWidth = width;
@@ -118,15 +124,15 @@ var ListView = React.createClass({
     this.scroller.setDimensions(width, height, scrollWidth, scrollHeight);
   },
 
-  getVisibleItemIndexes: function getVisibleItemIndexes() {
+  getVisibleItemIndexes: function () {
     var itemIndexes = [];
     var itemHeight = this.props.itemHeightGetter();
     var itemCount = this.props.numberOfItemsGetter();
     var scrollTop = this.state.scrollTop;
     var itemScrollTop = 0;
 
-    for (var index = 0; index < itemCount; index++) {
-      itemScrollTop = index * itemHeight - scrollTop;
+    for (var index=0; index < itemCount; index++) {
+      itemScrollTop = (index * itemHeight) - scrollTop;
 
       // Item is completely off-screen bottom
       if (itemScrollTop >= this.props.style.height) {
@@ -145,7 +151,7 @@ var ListView = React.createClass({
     return itemIndexes;
   },
 
-  updateScrollingDeceleration: function updateScrollingDeceleration() {
+  updateScrollingDeceleration: function () {
     var currVelocity = this.scroller.__decelerationVelocityY;
     var currScrollTop = this.state.scrollTop;
     var targetScrollTop = 0;
@@ -162,8 +168,8 @@ var ListView = React.createClass({
     var pageCount = this.props.numberOfItemsGetter();
     var pageScrollTop;
 
-    for (var pageIndex = 0, len = pageCount; pageIndex < len; pageIndex++) {
-      pageScrollTop = pageHeight * pageIndex - estimatedEndScrollTop;
+    for (var pageIndex=0, len=pageCount; pageIndex < len; pageIndex++) {
+      pageScrollTop = (pageHeight * pageIndex) - estimatedEndScrollTop;
       if (Math.abs(pageScrollTop) < closestZeroDelta) {
         closestZeroDelta = Math.abs(pageScrollTop);
         targetScrollTop = pageHeight * pageIndex;

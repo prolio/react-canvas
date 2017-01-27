@@ -8,7 +8,7 @@ var _fontFaces = {};
  * @param {Object} attributes Font attributes supported: style, weight
  * @return {Object}
  */
-function FontFace(family, url, attributes) {
+function FontFace (family, url, attributes) {
   var fontFace;
   var fontId;
 
@@ -38,13 +38,13 @@ function FontFace(family, url, attributes) {
  * @return {FontFace}
  */
 FontFace.Default = function (fontWeight) {
-  return FontFace('sans-serif', null, { weight: fontWeight });
+  return FontFace('sans-serif', null, {weight: fontWeight});
 };
 
 /**
  * @internal
  */
-function getCacheKey(family, url, attributes) {
+function getCacheKey (family, url, attributes) {
   return family + url + Object.keys(attributes).sort().map(function (key) {
     return attributes[key];
   });
